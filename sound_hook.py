@@ -172,6 +172,7 @@ def main() -> None:
             "--",
             sound_file,
             "-1",
+            str(_MAX_LOOP_SECS),
         ]
     elif player == "mpv":
         native_loop_cmd = [
@@ -220,6 +221,7 @@ def main() -> None:
                 "--",
                 sound_file,
                 str(n - 1),
+                str(_MAX_LOOP_SECS),
             ]
         elif player == "mpv":
             native_repeat = [
