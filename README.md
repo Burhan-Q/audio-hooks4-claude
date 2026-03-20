@@ -1,6 +1,11 @@
 # Claude Code Sound Hook
 
-Play sound clips in response to Claude Code hook events.
+Script and configuration YAML to play sound clips in response to Claude Code hook events.
+
+> [!CAUTION]
+> Audio maybe loud
+
+https://github.com/user-attachments/assets/e8ef8568-e1c6-41dc-b23f-ce7b690c8af2
 
 ## Requirements
 
