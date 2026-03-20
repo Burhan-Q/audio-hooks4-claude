@@ -1,0 +1,115 @@
+# Claude Code Sound Hook Configuration
+# ======================================
+# Each top-level key is a hook event name. Configure a sound_file to play when that event fires.
+# Events with no sound_file (or commented out) are silently skipped.
+#
+# Options per event:
+#   sound_file: /path/to/audio/file    # required - path to sound file
+#   loop: true|false                    # optional (default: false) - enable looping
+#   repeat: N                           # optional - play N times (only when loop: true, no 'until')
+#   until: EventName                    # optional - loop until this event fires (only when loop: true)
+#
+# Precedence:
+#   loop: false        → play once, ignore repeat and until
+#   loop: true + until → loop until that event fires (repeat is ignored)
+#   loop: true + repeat (no until) → play exactly N times
+#   loop: true (no repeat, no until) → loop forever
+#
+# Player auto-detection order: afplay (macOS) > mpv > ffplay > paplay > aplay
+# Override with the 'player' key below.
+
+player: auto  # auto | afplay | mpv | ffplay | paplay | aplay
+
+# --- Examples (uncomment and set your sound files) ---
+
+# SessionStart:
+#   sound_file: ~/sounds/startup.wav
+#   loop: false
+
+# InstructionsLoaded:
+#   sound_file: ~/sounds/loaded.wav
+#   loop: false
+
+# UserPromptSubmit:
+#   sound_file: ~/sounds/submit.wav
+#   loop: false
+
+# PreToolUse:
+#   sound_file: ~/sounds/working.wav
+#   loop: true
+#   until: PostToolUse
+
+# PermissionRequest:
+#   sound_file: ~/sounds/attention.wav
+#   loop: true
+#   repeat: 3
+
+# PostToolUse:
+#   sound_file: ~/sounds/tool_done.wav
+#   loop: false
+
+# PostToolUseFailure:
+#   sound_file: ~/sounds/error.wav
+#   loop: false
+
+# Notification:
+#   sound_file: ~/sounds/alert.wav
+#   loop: true
+#   repeat: 2
+
+# SubagentStart:
+#   sound_file: ~/sounds/agent_start.wav
+#   loop: false
+
+# SubagentStop:
+#   sound_file: ~/sounds/agent_stop.wav
+#   loop: false
+
+# Stop:
+#   sound_file: ~/sounds/done.wav
+#   loop: false
+
+# StopFailure:
+#   sound_file: ~/sounds/failure.wav
+#   loop: false
+
+# TeammateIdle:
+#   sound_file: ~/sounds/idle.wav
+#   loop: false
+
+# TaskCompleted:
+#   sound_file: ~/sounds/task_done.wav
+#   loop: false
+
+# ConfigChange:
+#   sound_file: ~/sounds/config.wav
+#   loop: false
+
+# WorktreeCreate:
+#   sound_file: ~/sounds/worktree.wav
+#   loop: false
+
+# WorktreeRemove:
+#   sound_file: ~/sounds/worktree_remove.wav
+#   loop: false
+
+# PreCompact:
+#   sound_file: ~/sounds/compact_start.wav
+#   loop: false
+
+# PostCompact:
+#   sound_file: ~/sounds/compact_done.wav
+#   loop: false
+
+# Elicitation:
+#   sound_file: ~/sounds/input_needed.wav
+#   loop: true
+#   until: ElicitationResult
+
+# ElicitationResult:
+#   sound_file: ~/sounds/input_received.wav
+#   loop: false
+
+# SessionEnd:
+#   sound_file: ~/sounds/goodbye.wav
+#   loop: false
