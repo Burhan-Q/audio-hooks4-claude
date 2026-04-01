@@ -21,11 +21,11 @@ from pathlib import Path
 import yaml
 
 PLAYER_CMDS = {
-    "afplay": lambda f: ["afplay", f],
-    "mpv": lambda f: ["mpv", "--no-video", "--really-quiet", f],
-    "ffplay": lambda f: ["ffplay", "-nodisp", "-autoexit", "-loglevel", "quiet", f],
-    "paplay": lambda f: ["paplay", f],
-    "aplay": lambda f: ["aplay", "-q", f],
+    "afplay": lambda f, v: ["afplay", "--volume", str(v), f],
+    "mpv": lambda f, v: ["mpv", "--no-video", "--really-quiet", f"--volume={int(v * 100)}", f],
+    "ffplay": lambda f, v: ["ffplay", "-nodisp", "-autoexit", "-loglevel", "quiet", "-volume", str(int(v * 100)), f],
+    "paplay": lambda f, v: ["paplay", f"--volume={int(v * 65536)}", f],
+    "aplay": lambda f, v: ["aplay", "-q", f],
 }
 PLAYER_ORDER = ["afplay", "mpv", "ffplay", "paplay", "aplay"]
 DEVNULL = {"stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL}
@@ -40,10 +40,12 @@ function run(argv) {
     var url = $.NSURL.fileURLWithPath(argv[0]);
     var loops = parseInt(argv[1]);
     var maxSecs = parseFloat(argv[2]);
+    var vol = parseFloat(argv[3]);
     var err = Ref();
     var p = $.AVAudioPlayer.alloc.initWithContentsOfURLError(url, err);
     if (!p) $.exit(1);
     p.numberOfLoops = loops;
+    p.volume = vol;
     p.play;
     var deadline = $.NSDate.dateWithTimeIntervalSinceNow(maxSecs);
     while (p.playing && $.NSDate.date.compare(deadline) < 0) {
@@ -62,9 +64,9 @@ def detect_player(cfg: str) -> str | None:
     return None
 
 
-def play_cmd_str(player: str, sound_file: str) -> str:
+def play_cmd_str(player: str, sound_file: str, volume: float) -> str:
     """Build a shell command string for use in bash -c loops."""
-    parts = PLAYER_CMDS[player](sound_file)
+    parts = PLAYER_CMDS[player](sound_file, volume)
     return " ".join(shlex.quote(p) for p in parts)
 
 
@@ -153,12 +155,13 @@ def main() -> None:
     loop = entry.get("loop", False)
     repeat = entry.get("repeat", 0)
     until = entry.get("until", "")
+    volume = max(0.0, min(1.0, float(entry.get("volume", config.get("volume", 1.0)))))
     player_cfg = config.get("player", "auto")
     player = detect_player(player_cfg)
     if not player:
         sys.exit(0)
 
-    cmd_str = play_cmd_str(player, sound_file)
+    cmd_str = play_cmd_str(player, sound_file, volume)
 
     # Prefer native gapless looping when available
     native_loop_cmd = None
@@ -173,6 +176,7 @@ def main() -> None:
             sound_file,
             "-1",
             str(_MAX_LOOP_SECS),
+            str(volume),
         ]
     elif player == "mpv":
         native_loop_cmd = [
@@ -180,6 +184,7 @@ def main() -> None:
             "--no-video",
             "--really-quiet",
             "--loop-file=inf",
+            f"--volume={int(volume * 100)}",
             sound_file,
         ]
     elif player == "ffplay":
@@ -190,13 +195,15 @@ def main() -> None:
             "quiet",
             "-loop",
             "0",
+            "-volume",
+            str(int(volume * 100)),
             sound_file,
         ]
 
     # loop: false → play once
     if not loop:
         subprocess.Popen(
-            PLAYER_CMDS[player](sound_file),
+            PLAYER_CMDS[player](sound_file, volume),
             start_new_session=True,
             **DEVNULL,
         )
@@ -222,6 +229,7 @@ def main() -> None:
                 sound_file,
                 str(n - 1),
                 str(_MAX_LOOP_SECS),
+                str(volume),
             ]
         elif player == "mpv":
             native_repeat = [
@@ -229,6 +237,7 @@ def main() -> None:
                 "--no-video",
                 "--really-quiet",
                 f"--loop-file={n}",
+                f"--volume={int(volume * 100)}",
                 sound_file,
             ]
         if native_repeat:

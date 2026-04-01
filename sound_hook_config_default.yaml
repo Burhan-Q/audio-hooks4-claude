@@ -5,9 +5,10 @@
 #
 # Options per event:
 #   sound_file: /path/to/audio/file    # required - path to sound file
-#   loop: true|false                    # optional (default: false) - enable looping
-#   repeat: N                           # optional - play N times (only when loop: true, no 'until')
-#   until: EventName                    # optional - loop until this event fires (only when loop: true)
+#   loop: true|false                   # optional (default: false) - enable looping
+#   repeat: N                          # optional - play N times (only when loop: true, no 'until')
+#   until: EventName                   # optional - loop until this event fires (only when loop: true)
+#   volume: 0.0-1.0                    # optional (default: 1.0) - playback volume (per-event override)
 #
 # Precedence:
 #   loop: false        → play once, ignore repeat and until
@@ -19,6 +20,7 @@
 # Override with the 'player' key below.
 
 player: auto  # auto | afplay | mpv | ffplay | paplay | aplay
+volume: 0.5   # global default volume (0.0 = silent, 1.0 = full) -- per-event volume overrides this
 
 # --- Examples (uncomment and set your sound files) ---
 
