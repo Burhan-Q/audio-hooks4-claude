@@ -77,6 +77,7 @@ Each top-level key in the YAML is a hook event name with these options:
 | `loop`       | bool    | `false` | Enable looping.                                  |
 | `repeat`     | int     | `0`     | Play N times (only with `loop: true`, no `until`).|
 | `until`      | string  | —       | Stop looping when this event fires.              |
+| `volume`     | float   | `0.5`   | Global default volume, (min=0.0, max=1.0)        |
 
 ### Playback modes
 
