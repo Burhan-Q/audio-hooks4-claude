@@ -1,0 +1,6 @@
+sound_hook_config.yaml
+.venv/
+.env
+.ref/
+__pycache__/
+*.pyc
